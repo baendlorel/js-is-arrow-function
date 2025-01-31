@@ -40,10 +40,10 @@ isArrowFunction((x) => () => x * x) === true;
 strict mode: If the given argument is not a function, throw an error.
 
 ```typescript
-isArrowFunction(function () {}) === false;
-isArrowFunction((a, b) => a * b) === true;
-isArrowFunction(null); // throw TypeError
-isArrowFunction(2); // throw TypeError
+isArrowFunction.strict(function () {}) === false;
+isArrowFunction.strict((a, b) => a * b) === true;
+isArrowFunction.strict(null); // throw TypeError
+isArrowFunction.strict(2); // throw TypeError
 ```
 
 ## LICENSE

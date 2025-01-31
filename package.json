@@ -1,11 +1,11 @@
 {
 	"name": "js-is-arrow-function",
-	"version": "0.0.1",
+	"version": "1.0.0",
 	"author": {
 		"name": "KasukabeTsumugi",
 		"email": "futami16237@gmail.com"
 	},
-	"description": "JavaScript/TypeScript module to judge if a function is an arrow function",
+	"description": "JavaScript/TypeScript module to precisely tell if a function is an arrow function",
 	"main": "dist/index.js",
 	"types": "dist/index.d.ts",
 	"files": [
