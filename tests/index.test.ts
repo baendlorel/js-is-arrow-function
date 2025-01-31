@@ -5,7 +5,10 @@ import { green } from './color';
 describe('EventBus class', () => {
   test(`false:function () {}`, () => expect(isArrowFunction(function () {})).toBe(false));
 
-  test(`throw error:null`, () => expect(() => isArrowFunction(null)).toThrow('is not a function'));
+  test(`false:null`, () => expect(isArrowFunction(null)).toBe(false));
+
+  test(`[strict]throw error:null`, () =>
+    expect(() => isArrowFunction.strict(null)).toThrow('is not a function'));
 
   test(`true:(a, b) => a * b)`, () => expect(isArrowFunction((a, b) => a * b)).toBe(true));
 
