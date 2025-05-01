@@ -4,6 +4,36 @@
  * @license MIT
  */
 
+import { err, getOriginalToString, noSideEffectCall, strict } from './core';
+
+const isArrowFunction = (fn: any, isStrict: boolean = false) => {
+  const toString = getOriginalToString();
+
+  if (typeof toString !== 'function') {
+    return strict(isStrict, toString);
+  }
+
+  // 下面开始逐项测试
+  // 1、是否为函数
+  if (typeof fn !== 'function') {
+    return strict(isStrict, `fn is not a function`);
+  }
+
+  const fnStr = toString.call(fn);
+  // 其实前期已经在getOriginalToString中使用过toString.call，这里不太可能不是string
+  // 严谨起见这里加上判定
+  if (typeof fnStr !== 'string') {
+    throw err(`[isArrowFunction] fn.toString() does not return a string`);
+  }
+
+  // 2、包裹参数的括号两侧的情况
+  for (let i = 0; i < fnStr.length; i++) {
+    const c = fnStr[i];
+    if (c === '(') {
+    }
+  }
+};
+
 /**
  * 严格模式：判断是否为箭头函数，但是所有不是函数的情况将会报错
  */
@@ -14,18 +44,8 @@ function isArrowFunctionStrict(fn: any): boolean {
     );
   }
 
-  // 经过研究，使用new操作符是最为确定的判断方法，箭头函数无法new
-  // 此处用proxy拦截构造函数，防止普通函数真的作为构造函数运行
-  // After some research, using new operator to distinct arrow functions from normal functions is the best approach.
-  // We use proxy here to avoid truely running the constructor normal function(while arrow function cannot be newed)
   try {
-    const fp = new Proxy(fn, {
-      construct(target, args) {
-        return {};
-      },
-    });
-    new fp();
-    return false;
+    return noSideEffectCall(fn);
   } catch (error) {
     if (
       error instanceof TypeError &&
@@ -35,7 +55,7 @@ function isArrowFunctionStrict(fn: any): boolean {
       return true;
     }
     console.error('[isArrowFunction]', 'fn:', fn);
-    throw new Error('[isArrowFunction]判断发生未知错误');
+    throw new Error('[isArrowFunction] 发生了未知错误。An unknown error occurred.');
   }
 }
 
@@ -57,19 +77,13 @@ type IsArrowFunctionJudger = JudgeFunction & StrictMode;
  * @param fn 给定的函数
  * @return boolean
  */
-const isArrowFunction: IsArrowFunctionJudger = Object.assign(
+const isArrowFunctione: IsArrowFunctionJudger = Object.assign(
   function (fn: any): boolean {
     if (typeof fn !== 'function') {
       return false;
     }
     try {
-      const fp = new Proxy(fn, {
-        construct(target, args) {
-          return {};
-        },
-      });
-      new fp();
-      return false;
+      return noSideEffectCall(fn);
     } catch (error) {
       return true;
     }
