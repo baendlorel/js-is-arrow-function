@@ -1,8 +1,6 @@
-export const err = (message: string) => {
-  return new Error('[isArrowFunction] ' + message);
-};
+import { err } from './error';
 
-export const strict = (isStrict: boolean, message: string) => {
+export const applyStrict = (isStrict: boolean, message: string) => {
   if (isStrict) {
     throw err(message);
   } else {
@@ -44,42 +42,6 @@ export const getOriginalToString = (): (() => string) | string => {
   return origin;
 };
 
-export const analyzeFunction = (fnStr: string) => {
-  let leftBracketIndex = -1;
-  let rightBracketIndex = -1;
-  let bracketLevel = 0;
-
-  // 可以合法出现单边括号的地方有
-  // 字符串内部、正则表达式、注释文本
-  for (let i = 0; i < fnStr.length; i++) {
-    const c = fnStr[i];
-    if (c === '(') {
-      bracketLevel++;
-      if (bracketLevel === 1 && leftBracketIndex === -1) {
-        leftBracketIndex = i;
-      }
-      continue;
-    }
-
-    if (c === ')' && leftBracketIndex !== -1) {
-      bracketLevel--;
-      if (bracketLevel === 0 && rightBracketIndex === -1) {
-        rightBracketIndex = i;
-        break;
-      }
-      continue;
-    }
-  }
-
-  // 解析三个部分
-  const name = fnStr.slice(0, leftBracketIndex).trim();
-  const params = fnStr.slice(leftBracketIndex + 1, rightBracketIndex).trim();
-  const body = fnStr.slice(rightBracketIndex + 1).trim();
-
-  // 返回解析结果
-  return { name, params, body };
-};
-
 /**
  * 经过研究，使用new操作符是最为确定的判断方法，箭头函数无法new \
  * 此处用proxy拦截构造函数，防止普通函数真的作为构造函数运行 \
@@ -88,12 +50,29 @@ export const analyzeFunction = (fnStr: string) => {
  * @param fn
  * @returns
  */
-export const noSideEffectCall = (fn: any) => {
-  const fp = new Proxy(fn, {
-    construct(target, args) {
-      return {};
-    },
-  });
-  new fp();
-  return false;
+export const canBeNewed = (fn: any) => {
+  try {
+    const fp = new Proxy(fn, {
+      construct(target, args) {
+        return {};
+      },
+    });
+    new fp();
+    return true;
+  } catch (error) {
+    if (
+      error instanceof TypeError &&
+      error.message &&
+      error.message.includes('is not a constructor')
+    ) {
+      return false;
+    }
+    console.error(
+      '[isArrowFunction]',
+      '发生了未知错误。An unknown error occurred.',
+      'fn:',
+      fn
+    );
+    throw error;
+  }
 };
