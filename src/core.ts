@@ -1,7 +1,7 @@
 import { err } from './error';
 
-export const applyStrict = (isStrict: boolean, message: string) => {
-  if (isStrict) {
+export const applyStrict = (strict: boolean, message: string) => {
+  if (strict) {
     throw err(message);
   } else {
     console.warn('[isArrowFunction] ' + message);

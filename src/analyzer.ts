@@ -51,10 +51,35 @@ export const analyse = (fnStr: string) => {
       continue;
     }
 
+    // 2.1 多行注释
+    if (c === '/' && fnStr[i + 1] === '*') {
+      i += 1;
+      while (i < fnStr.length) {
+        if (fnStr[i] === '*' && fnStr[i + 1] === '/') {
+          i += 1;
+          break;
+        }
+        i++;
+      }
+      continue;
+    }
+
+    // 2.2 单行注释
+    if (c === '/' && fnStr[i + 1] === '/') {
+      i += 1;
+      while (i < fnStr.length) {
+        if (fnStr[i] === '\n') {
+          break;
+        }
+        i++;
+      }
+      continue;
+    }
+
     // 下面开始判定函数声明中存在的字符串
     // 不需要处理反引号里面转义单引号的情况，因为对字符串、正则表达式的判定一定是基于一个首先出现的标志性字母的
     // 首先作为开头的字母肯定不需要转义，
-    // 2 引号、正则表达式
+    // 3 引号、正则表达式
     if (c === `'` || c === `"` || c === '`' || c === '/') {
       const rest = fnStr.slice(i);
       const nextIndex = scanForNext(rest, c);

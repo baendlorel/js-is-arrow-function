@@ -44,12 +44,12 @@ const getFunctionType = (
     return 'NotFunction';
   }
 
-  if (canBeNewed(fn)) {
-    return 'NormalFunction';
-  }
-
   if (isArrowFunction(fn)) {
     return 'ArrowFunction';
+  }
+
+  if (canBeNewed(fn)) {
+    return 'NormalFunction';
   }
 
   return 'MemberFunction';
