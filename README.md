@@ -1,8 +1,12 @@
+> [!CAUTION]
+> This package is deprecated. Please use my new package [Get-Function-Features](https://www.npmjs.com/package/get-function-features) instead. 
+
 # js-is-arrow-function
 
-A precise way to judge if a function is an arrow function.
+Tell if a function is an arrow function.
 
 Can be used both on javascript and typescript projects.
+
 
 ## Requirement
 
